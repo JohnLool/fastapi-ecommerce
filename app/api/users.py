@@ -4,8 +4,10 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 
 from app.core.authx_security import security
+from app.dependecies.auth import get_current_user
 from app.dependecies.services import get_user_service
-from app.schemas.user import UserOut, UserCreate
+from app.models import UserOrm
+from app.schemas.user import UserOut, UserCreate, UserUpdate
 from app.services.user_service import UserService
 
 router = APIRouter(prefix="/users", tags=["users"])
@@ -16,6 +18,21 @@ async def create_user(
         user_service: UserService = Depends(get_user_service),
 ):
     return await user_service.create(user)
+
+@router.put("", response_model=UserOut)
+async def update_user(
+        user_data: UserUpdate,
+        user_service: UserService = Depends(get_user_service),
+        current_user: UserOrm = Depends(get_current_user),
+):
+    return await user_service.update(current_user.id, user_data)
+
+@router.delete("", response_model=UserOut)
+async def delete_user(
+        current_user: UserOrm = Depends(get_current_user),
+        user_service: UserService = Depends(get_user_service)
+):
+    return await user_service.delete(current_user.id)
 
 @router.post("/login")
 async def login_for_user_tokens(
@@ -30,5 +47,5 @@ async def login_for_user_tokens(
             detail="Invalid username or password"
         )
 
-    token = security.create_access_token(uid=user.username)
-    return {"access_token": token}
+    token = security.create_access_token(uid=user.username, data={"user_id": user.id})
+    return {"access_token": token, "token_type": "bearer"}

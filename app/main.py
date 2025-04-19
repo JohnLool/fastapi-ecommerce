@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from app.core.database import create_db, delete_db
+# from app.core.database import create_db, delete_db
 from app.api.users import router as users_router
 
 
@@ -10,7 +10,7 @@ from app.api.users import router as users_router
 async def lifespan(_: FastAPI):
     # await delete_db()
     yield
-    await create_db()
+    # await create_db()
 
 
 app = FastAPI(lifespan=lifespan)

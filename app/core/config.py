@@ -8,6 +8,11 @@ class Settings(BaseSettings):
     DB_PASS: str
     DB_NAME: str
 
+    MONGO_HOST: str
+    MONGO_PORT: int
+    MONGO_DB_NAME: str
+    MONGO_URI: str
+
     ALGORITHM: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int
     REFRESH_TOKEN_EXPIRE_DAYS: int

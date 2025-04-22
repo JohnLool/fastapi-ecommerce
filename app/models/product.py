@@ -8,7 +8,7 @@ class Product(Document):
     description: Optional[str]
     price: float
     in_stock: int
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=datetime.now)
 
     class Settings:
         name = "products"

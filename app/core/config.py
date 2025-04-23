@@ -8,8 +8,6 @@ class Settings(BaseSettings):
     DB_PASS: str
     DB_NAME: str
 
-    MONGO_HOST: str
-    MONGO_PORT: int
     MONGO_DB_NAME: str
     MONGO_URI: str
 

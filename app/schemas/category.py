@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional
 
 from beanie import PydanticObjectId
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class CategoryBase(BaseModel):
@@ -22,6 +22,7 @@ class CategoryOut(CategoryBase):
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 
-    class Config:
-        allow_population_by_field_name = True
-        orm_mode = True
+    model_config = ConfigDict(
+        validate_by_name=True,
+        from_attributes=True
+    )

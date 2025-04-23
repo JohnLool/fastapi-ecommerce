@@ -10,8 +10,8 @@ class Category(Document):
     name: Indexed(str, unique=True) = Field(...)
     slug: Indexed(str, unique=True) = Field(None)
     description: str = Field("")
-    created_at: datetime = Field(default_factory=datetime.now(timezone.utc))
-    updated_at: datetime = Field(default_factory=datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     class Settings:
         name = "categories"

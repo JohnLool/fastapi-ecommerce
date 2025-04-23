@@ -1,8 +1,10 @@
 from datetime import datetime
 from typing import Optional
 
-from beanie import PydanticObjectId
-from pydantic import BaseModel, Field
+from beanie import PydanticObjectId, Link
+from pydantic import BaseModel, Field, ConfigDict
+
+from app.models.category import Category
 
 
 class ProductBase(BaseModel):
@@ -10,7 +12,7 @@ class ProductBase(BaseModel):
     description: Optional[str] = Field("")
     price: float = Field(..., ge=0)
     in_stock: int = Field(0, ge=0)
-    category_id: Optional[PydanticObjectId] = Field(None)
+    category: Optional[Link[Category]] = None
 
 class ProductCreate(ProductBase):
     pass
@@ -28,6 +30,7 @@ class ProductOut(ProductBase):
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 
-    class Config:
-        allow_population_by_field_name = True
-        orm_mode = True
+    model_config = ConfigDict(
+        validate_by_name=True,
+        from_attributes=True
+    )

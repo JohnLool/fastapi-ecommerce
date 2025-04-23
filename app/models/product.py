@@ -18,8 +18,8 @@ class Product(Document):
     in_stock: int = Field(0, ge=0)
 
     category: Optional[Link[Category]] = Field(None)
-    created_at: datetime = Field(default_factory=datetime.now(timezone.utc))
-    updated_at: datetime = Field(default_factory=datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     class Settings:
         name = "products"

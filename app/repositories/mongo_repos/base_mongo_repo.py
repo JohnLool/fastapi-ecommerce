@@ -14,6 +14,9 @@ class BaseMongoRepository(AbstractRepository[T], Generic[T]):
     async def get_by_field(self, field: str, value: Any) -> Optional[T]:
         return await self.model.find_one({field: value})
 
+    async def get_by_id(self, item_id: Any) -> Optional[T]:
+        return await self.model.get(item_id)
+
     async def get_all(self, *filters: Any) -> List[T]:
         query = self.model.find(*filters) if filters else self.model.find()
         return await query.to_list()

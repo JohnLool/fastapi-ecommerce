@@ -1,4 +1,4 @@
-from typing import List, Optional, Type, TypeVar, Generic
+from typing import List, Optional, Type, TypeVar, Generic, Any
 from pydantic import BaseModel
 from app.repositories.base_repo import BaseRepository
 from app.utils.logger import logger
@@ -21,34 +21,45 @@ class BaseService(Generic[Repository]):
             logger.error("Service: Creation failed.")
             return None
         record = await self.repository.get_by_id(record.id)
-        return self.schema_out.model_validate(record)
+        if not record:
+            logger.error("Service: Failed to retrieve created record.")
+            return None
+        record_dict = record.model_dump(by_alias=True)
+        return self.schema_out.model_validate(record_dict)
 
-    async def update(self, record_id: int, data: SchemaBase) -> Optional[SchemaOut]:
+    async def update(self, record_id: Any, data: SchemaBase) -> Optional[SchemaOut]:
         data_dict = data.model_dump() if hasattr(data, "model_dump") else data
         logger.info(f"Service: Updating {self.repository.model.__name__} with id {record_id} using data: {data_dict}")
         record = await self.repository.update(record_id, data_dict)
         if not record:
             logger.error(f"Service: Update failed for id {record_id}")
             return None
-        return self.schema_out.model_validate(record)
+        record_dict = record.model_dump(by_alias=True)
+        return self.schema_out.model_validate(record_dict)
 
-    async def delete(self, record_id: int) -> Optional[SchemaOut]:
+    async def delete(self, record_id: Any) -> Optional[SchemaOut]:
         logger.info(f"Service: Deleting {self.repository.model.__name__} with id {record_id}")
         record = await self.repository.delete(record_id)
         if not record:
             logger.error(f"Service: Delete failed for id {record_id}")
             return None
-        return self.schema_out.model_validate(record)
+        record_dict = record.model_dump(by_alias=True)
+        return self.schema_out.model_validate(record_dict)
 
-    async def get_all(self, *filters) -> List[SchemaOut]:
-        logger.info("Service: Getting all records")
+    async def get_all(self, *filters: Any) -> List[SchemaOut]:
+        logger.info(f"Service: Getting all {self.repository.model.__name__}")
         records = await self.repository.get_all(*filters)
-        return [self.schema_out.model_validate(record) for record in records]
+        results: List[SchemaOut] = []
+        for rec in records:
+            rec_dict = rec.model_dump(by_alias=True)
+            results.append(self.schema_out.model_validate(rec_dict))
+        return results
 
-    async def get_by_id(self, record_id: int, *filters) -> Optional[SchemaOut]:
-        logger.info(f"Service: Getting record by id {record_id}")
-        record = await self.repository.get_by_id(record_id, *filters)
+    async def get_by_id(self, record_id: Any) -> Optional[SchemaOut]:
+        logger.info(f"Service: Getting {self.repository.model.__name__} by id {record_id}")
+        record = await self.repository.get_by_id(record_id)
         if not record:
             logger.warning(f"Service: Record with id {record_id} not found")
             return None
-        return self.schema_out.model_validate(record)
+        record_dict = record.model_dump(by_alias=True)
+        return self.schema_out.model_validate(record_dict)

@@ -1,5 +1,5 @@
 from app.models.category import Category
-from app.repositories.base_mongo_repo import BaseMongoRepository
+from app.repositories.mongo_repos.base_mongo_repo import BaseMongoRepository
 
 
 class CategoryRepository(BaseMongoRepository[Category]):

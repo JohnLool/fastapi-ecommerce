@@ -26,3 +26,4 @@ class Category(Document):
     @before_event(Replace)
     def on_replace(self):
         self.updated_at = datetime.now(timezone.utc)
+        self.slug = slugify(self.name)

@@ -47,5 +47,8 @@ async def login_for_user_tokens(
             detail="Invalid username or password"
         )
 
-    token = security.create_access_token(uid=user.username, data={"user_id": user.id})
+    token = security.create_access_token(
+        uid=user.username,
+        data={"user_id": user.id, "role": user.role.value}
+    )
     return {"access_token": token, "token_type": "bearer"}

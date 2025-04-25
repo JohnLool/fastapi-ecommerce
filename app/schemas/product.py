@@ -21,7 +21,7 @@ class ProductUpdate(BaseModel):
     description: Optional[str] = Field(None)
     price: Optional[float] = Field(None, ge=0)
     in_stock: Optional[int] = Field(None, ge=0)
-    category_id: Optional[PydanticObjectId] = Field(None)
+    category: Optional[str] = Field(...)
 
 class ProductOut(ProductBase):
     id: PydanticObjectId = Field(..., alias="_id")

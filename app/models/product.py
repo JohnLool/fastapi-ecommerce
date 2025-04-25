@@ -18,8 +18,8 @@ class Product(Document):
     in_stock: int = Field(0, ge=0)
 
     category: Optional[Link[Category]] = Field(None)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(None)
+    updated_at: datetime = Field(None)
 
     class Settings:
         name = "products"
@@ -29,9 +29,6 @@ class Product(Document):
         now = datetime.now(timezone.utc)
         self.created_at = now
         self.updated_at = now
-        base = slugify(self.name)
-        suf = uuid4().hex[:8]
-        self.slug = f"{base}-{suf}"
 
     @before_event(Replace)
     def on_replace(self):

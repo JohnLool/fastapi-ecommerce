@@ -41,7 +41,7 @@ class ProductService(BaseService[ProductRepository]):
             results.append(ProductOut.model_validate(product_dict))
         return results
 
-    async def create(self, data: ProductCreate) -> Optional[ProductOut]:
+    async def create_with_seller(self, data: ProductCreate, seller_id: int) -> Optional[ProductOut]:
         product_dict = data.model_dump(exclude_unset=True)
 
         if "category" in product_dict:
@@ -56,6 +56,8 @@ class ProductService(BaseService[ProductRepository]):
             base = slugify(product_dict["name"])
             suf = uuid4().hex[:8]
             product_dict["slug"] = f"{base}-{suf}"
+
+        product_dict["seller_id"] = seller_id
 
         product = await self.repository.create(product_dict)
         if not product:

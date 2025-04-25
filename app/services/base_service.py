@@ -20,12 +20,11 @@ class BaseService(Generic[Repository]):
         if not record:
             logger.error("Service: Creation failed.")
             return None
-        record = await self.repository.get_by_id(record.id)
+        record = await self.get_by_id(record.id)
         if not record:
             logger.error("Service: Failed to retrieve created record.")
             return None
-        record_dict = record.model_dump(by_alias=True)
-        return self.schema_out.model_validate(record_dict)
+        return record
 
     async def update(self, record_id: Any, data: SchemaBase) -> Optional[SchemaOut]:
         data_dict = data.model_dump() if hasattr(data, "model_dump") else data
@@ -34,7 +33,7 @@ class BaseService(Generic[Repository]):
         if not record:
             logger.error(f"Service: Update failed for id {record_id}")
             return None
-        record_dict = record.model_dump(by_alias=True)
+        record_dict = record.model_dump(by_alias=True) if hasattr(record, "model_dump") else record
         return self.schema_out.model_validate(record_dict)
 
     async def delete(self, record_id: Any) -> Optional[SchemaOut]:
@@ -43,7 +42,7 @@ class BaseService(Generic[Repository]):
         if not record:
             logger.error(f"Service: Delete failed for id {record_id}")
             return None
-        record_dict = record.model_dump(by_alias=True)
+        record_dict = record.model_dump(by_alias=True) if hasattr(record, "model_dump") else record
         return self.schema_out.model_validate(record_dict)
 
     async def get_all(self, *filters: Any) -> List[SchemaOut]:
@@ -51,7 +50,7 @@ class BaseService(Generic[Repository]):
         records = await self.repository.get_all(*filters)
         results: List[SchemaOut] = []
         for rec in records:
-            rec_dict = rec.model_dump(by_alias=True)
+            rec_dict = rec.model_dump(by_alias=True) if hasattr(rec, "model_dump") else rec
             results.append(self.schema_out.model_validate(rec_dict))
         return results
 
@@ -61,5 +60,5 @@ class BaseService(Generic[Repository]):
         if not record:
             logger.warning(f"Service: Record with id {record_id} not found")
             return None
-        record_dict = record.model_dump(by_alias=True)
+        record_dict = record.model_dump(by_alias=True) if hasattr(record, "model_dump") else record
         return self.schema_out.model_validate(record_dict)

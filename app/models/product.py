@@ -3,14 +3,13 @@ from typing import Optional
 from beanie import Document, Indexed, before_event, Insert, Replace, PydanticObjectId, Link
 from pydantic import Field
 from datetime import datetime, timezone
-from slugify import slugify
-from uuid import uuid4
 
 from app.models.category import Category
 
 
 class Product(Document):
     id: Optional[PydanticObjectId] = Field(default=None, alias="_id")
+    seller_id: int = Field(...)
     name: str = Field(...)
     slug: Indexed(str, unique=True) = Field(None)
     description: str = Field("")

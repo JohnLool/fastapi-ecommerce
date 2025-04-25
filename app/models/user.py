@@ -1,7 +1,7 @@
 from enum import Enum
 
 from app.core.database import Base
-from sqlalchemy import String, Boolean, Integer, func
+from sqlalchemy import String, Boolean, Integer, func, Index
 from sqlalchemy import Enum as SqlEnum
 from sqlalchemy.orm import Mapped, mapped_column
 from datetime import datetime
@@ -16,10 +16,14 @@ class Role(str, Enum):
 
 class UserOrm(Base):
     __tablename__ = "users"
+    __table_args__ = (
+        Index("uq_users_email_active", "email", unique=True, postgresql_where="deleted = false"),
+        Index("uq_users_username_active", "username", unique=True, postgresql_where="deleted = false"),
+    )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    username: Mapped[str] = mapped_column(String, index=True, unique=True, nullable=False)
-    email: Mapped[str] = mapped_column(String(255), unique=True, index=True, nullable=False)
+    username: Mapped[str] = mapped_column(String, nullable=False)
+    email: Mapped[str] = mapped_column(String(255), nullable=False)
     hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())

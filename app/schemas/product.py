@@ -25,7 +25,7 @@ class ProductUpdate(BaseModel):
 
 class ProductOut(ProductBase):
     id: PydanticObjectId = Field(..., alias="_id")
-    seller_id: int
+    shop_id: int = Field(...)
     slug: str = Field(...)
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None

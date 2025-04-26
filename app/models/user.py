@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 from enum import Enum
 
 from app.core.database import Base
 from sqlalchemy import String, Boolean, Integer, func, Index
 from sqlalchemy import Enum as SqlEnum
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime
 
 
@@ -28,10 +30,12 @@ class UserOrm(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
     updated_at: Mapped[datetime | None] = mapped_column(onupdate=func.now())
-    deleted: Mapped[bool] = mapped_column(Boolean, default=False)
+    deleted: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
     role: Mapped[Role] = mapped_column(
         SqlEnum(Role, name="role_enum"),
         server_default=Role.customer,
         nullable=False
     )
+
+    shops: Mapped[list["Shop"]] = relationship('Shop', back_populates='owner', cascade='all, delete-orphan')

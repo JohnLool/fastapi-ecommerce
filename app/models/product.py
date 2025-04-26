@@ -9,7 +9,7 @@ from app.models.category import Category
 
 class Product(Document):
     id: Optional[PydanticObjectId] = Field(default=None, alias="_id")
-    seller_id: int = Field(...)
+    shop_id: int = Field(...)
     name: str = Field(...)
     slug: Indexed(str, unique=True) = Field(None)
     description: str = Field("")

@@ -6,7 +6,7 @@ from app.core.database import Base
 from app.models.user import UserOrm
 
 
-class Shop(Base):
+class ShopOrm(Base):
     __tablename__ = 'shops'
     __table_args__ = (
         Index("uq_shops_name_active", "name", unique=True, postgresql_where="deleted = false"),

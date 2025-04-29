@@ -6,14 +6,14 @@ from pydantic import BaseModel, Field, ConfigDict
 
 
 class CategoryBase(BaseModel):
-    name: str = Field(...)
+    name: str = Field(..., max_length=255)
 
 class CategoryCreate(CategoryBase):
-    description: Optional[str] = Field(None)
+    description: Optional[str] = Field(None, max_length=255)
 
 class CategoryUpdate(BaseModel):
-    name: Optional[str] = Field(None)
-    description: Optional[str] = Field(None)
+    name: Optional[str] = Field(None, max_length=255)
+    description: Optional[str] = Field(None, max_length=255)
 
 class CategoryOut(CategoryBase):
     id: PydanticObjectId = Field(..., alias="_id")

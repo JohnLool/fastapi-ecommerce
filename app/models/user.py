@@ -12,7 +12,7 @@ from datetime import datetime
 class Role(str, Enum):
     owner        = "owner"        # site owner, all rights, can create new categories
     admin        = "admin"        # site operator, can help sellers/customers
-    seller       = "seller"       # can create/edit/delete products
+    seller       = "seller"       # can create/edit/delete products and shops
     customer     = "customer"     # can buy, remain active
 
 
@@ -38,4 +38,4 @@ class UserOrm(Base):
         nullable=False
     )
 
-    shops: Mapped[list["Shop"]] = relationship('Shop', back_populates='owner', cascade='all, delete-orphan')
+    shops: Mapped[list["ShopOrm"]] = relationship('ShopOrm', back_populates='owner', cascade='all, delete-orphan')

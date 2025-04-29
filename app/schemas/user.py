@@ -1,15 +1,15 @@
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel, constr, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field, EmailStr
 
 
 class UserBase(BaseModel):
-    username: constr(min_length=5, max_length=16, strip_whitespace=True)
-    email: str
+    username: str = Field(..., min_length=5, max_length=255)
+    email: EmailStr
 
 
 class UserCreate(UserBase):
-    password: constr(min_length=5, max_length=16)
+    password: str = Field(..., min_length=5, max_length=16)
 
 
 class UserOut(UserBase):
@@ -21,6 +21,6 @@ class UserOut(UserBase):
 
 
 class UserUpdate(UserBase):
-    username: constr(min_length=5, max_length=16, strip_whitespace=True) | None = None
-    email: str | None = None
-    password: constr(min_length=5, max_length=16) | None = None
+    username: str = Field(None, min_length=5, max_length=255)
+    email: EmailStr | None = None
+    password: str = Field(None, min_length=5, max_length=16)

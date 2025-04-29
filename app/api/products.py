@@ -1,7 +1,7 @@
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from app.dependecies.auth import require_role
+from app.dependecies.auth import require_scopes
 from app.dependecies.services import get_product_service
 from app.models.user import Role, UserOrm
 from app.services.mongo_services.product_service import ProductService
@@ -29,7 +29,7 @@ async def get_product_by_slug(
 async def create_product(
     data: ProductCreate,
     service: ProductService = Depends(get_product_service),
-    current_user: UserOrm = Depends(require_role(Role.seller, Role.admin, Role.owner))
+    current_user: UserOrm = Depends(require_scopes("create:product"))
 ):
     product = await service.create_with_seller(data, current_user.id)
     if not product:

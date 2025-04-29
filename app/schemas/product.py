@@ -5,23 +5,22 @@ from beanie import PydanticObjectId
 from pydantic import BaseModel, Field, ConfigDict
 
 
-
 class ProductBase(BaseModel):
-    name: str = Field(...)
-    description: Optional[str] = Field("")
+    name: str = Field(..., max_length=255)
+    description: Optional[str] = Field("", max_length=1000)
     price: float = Field(..., ge=0)
     in_stock: int = Field(0, ge=0)
-    category: Optional[str] = Field(...)
+    category: Optional[str] = Field(..., max_length=255)
 
 class ProductCreate(ProductBase):
     pass
 
 class ProductUpdate(BaseModel):
-    name: Optional[str] = Field(None)
-    description: Optional[str] = Field(None)
+    name: Optional[str] = Field(None, max_length=255)
+    description: Optional[str] = Field(None, max_length=1000)
     price: Optional[float] = Field(None, ge=0)
     in_stock: Optional[int] = Field(None, ge=0)
-    category: Optional[str] = Field(...)
+    category: Optional[str] = Field(..., max_length=255)
 
 class ProductOut(ProductBase):
     id: PydanticObjectId = Field(..., alias="_id")

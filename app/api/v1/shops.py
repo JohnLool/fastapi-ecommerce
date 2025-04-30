@@ -10,7 +10,7 @@ from app.schemas.shop import ShopOut, ShopCreate, ShopUpdate
 from app.services.shop_service import ShopService
 
 
-router = APIRouter(prefix="/shops", tags=["shops"])
+router = APIRouter(prefix="/shops", tags=["shop"])
 
 
 @router.get("", response_model=List[ShopOut])
@@ -19,7 +19,7 @@ async def get_shops(
 ):
     return await shop_service.get_all()
 
-@router.post("", response_model=ShopOut)
+@router.post("", response_model=ShopOut, status_code=201)
 async def create_shop(
         shop_data: ShopCreate,
         shop_service: ShopService = Depends(get_shop_service),
@@ -37,7 +37,7 @@ async def get_shop_by_slug(
 ):
     return await shop_service.get_by_slug(slug)
 
-@router.put(
+@router.patch(
     "/{shop_slug}",
     response_model=ShopOut,
     dependencies=[Security(require_scopes("update:shop"))],
@@ -55,7 +55,7 @@ async def update_shop_by_slug(
 
 @router.delete(
     "/{shop_slug}",
-    response_model=ShopOut,
+    status_code=204,
     dependencies=[Security(require_scopes("delete:shop"))],
 )
 async def delete_shop(

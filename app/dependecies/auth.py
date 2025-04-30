@@ -10,7 +10,7 @@ from app.services.user_service import UserService
 
 
 oauth2_scheme = OAuth2PasswordBearer(
-    tokenUrl="/users/login",
+    tokenUrl="/api/v1/users/login",
 )
 
 

@@ -8,9 +8,9 @@ from app.models import UserOrm
 from app.schemas.user import UserOut, UserCreate, UserUpdate
 from app.services.user_service import UserService
 
-router = APIRouter(prefix="/users", tags=["users"])
+router = APIRouter(prefix="/users", tags=["user"])
 
-@router.post("", response_model=UserOut)
+@router.post("", response_model=UserOut, status_code=201)
 async def create_user(
         user: UserCreate,
         user_service: UserService = Depends(get_user_service),
@@ -23,7 +23,7 @@ async def get_user_profile(
         current_user: UserOrm = Depends(require_scopes("read:profile"))
 ):
     return await user_service.get_by_id(current_user.id)
-@router.put("", response_model=UserOut)
+@router.patch("", response_model=UserOut)
 async def update_user(
         user_data: UserUpdate,
         user_service: UserService = Depends(get_user_service),
@@ -31,7 +31,7 @@ async def update_user(
 ):
     return await user_service.update(current_user.id, user_data)
 
-@router.delete("", response_model=UserOut)
+@router.delete("", status_code=204)
 async def delete_user(
         current_user: UserOrm = Depends(get_current_user),
         user_service: UserService = Depends(get_user_service)

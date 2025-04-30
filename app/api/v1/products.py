@@ -9,7 +9,7 @@ from app.schemas.shop import ShopOut
 from app.services.mongo_services.product_service import ProductService
 from app.schemas.product import ProductCreate, ProductUpdate, ProductOut
 
-router = APIRouter(prefix="/product", tags=["products"])
+router = APIRouter(prefix="/products", tags=["products"])
 
 @router.get("", response_model=List[ProductOut])
 async def list_products(
@@ -30,6 +30,7 @@ async def get_product_by_slug(
 @router.post(
     "",
     response_model=ProductOut,
+    status_code=201,
     dependencies=[Security(require_scopes("create:product"))],
 )
 async def create_product(
@@ -42,7 +43,7 @@ async def create_product(
         raise HTTPException(status_code=400, detail="Product creation failed")
     return product
 
-@router.put(
+@router.patch(
     "/{product_slug}",
     response_model=ProductOut,
     dependencies=[Security(require_scopes("update:product"))],
@@ -59,7 +60,7 @@ async def update_product_by_slug(
 
 @router.delete(
     "/{product_slug}",
-    response_model=ProductOut,
+    status_code=204,
     dependencies=[Security(require_scopes("delete:product"))],
 )
 async def delete_product_by_slug(

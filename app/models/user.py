@@ -31,11 +31,19 @@ class UserOrm(Base):
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
     updated_at: Mapped[datetime | None] = mapped_column(onupdate=func.now())
     deleted: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
-
     role: Mapped[Role] = mapped_column(
         SqlEnum(Role, name="role_enum"),
         server_default=Role.customer,
         nullable=False
     )
 
-    shops: Mapped[list["ShopOrm"]] = relationship('ShopOrm', back_populates='owner', cascade='all, delete-orphan')
+    shops: Mapped[list["ShopOrm"]] = relationship(
+        'ShopOrm',
+        back_populates='owner',
+        cascade='all, delete-orphan'
+    )
+    role_requests: Mapped[list["RoleRequestOrm"]] = relationship(
+        "RoleRequestOrm",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )

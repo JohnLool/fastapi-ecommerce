@@ -1,6 +1,7 @@
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Security
 
+from app.dependecies.auth import require_scopes
 from app.dependecies.services import get_category_service
 from app.services.mongo_services.category_service import CategoryService
 from app.schemas.category import CategoryCreate, CategoryUpdate, CategoryOut
@@ -23,7 +24,11 @@ async def get_category_by_slug(
         raise HTTPException(status_code=404, detail="Category not found")
     return category
 
-@router.post("", response_model=CategoryOut, status_code=201)
+@router.post(
+    "",
+    response_model=CategoryOut,
+    dependencies=[Security(require_scopes("create:category"))],
+    status_code=201)
 async def create_category(
     data: CategoryCreate,
     service: CategoryService = Depends(get_category_service)
@@ -33,7 +38,11 @@ async def create_category(
         raise HTTPException(status_code=400, detail="Category creation failed")
     return category
 
-@router.patch("/{slug}", response_model=CategoryOut)
+@router.patch(
+    "/{slug}",
+    response_model=CategoryOut,
+    dependencies=[Security(require_scopes("update:category"))],
+)
 async def update_category_by_slug(
     slug: str,
     data: CategoryUpdate,
@@ -47,7 +56,11 @@ async def update_category_by_slug(
         raise HTTPException(status_code=400, detail="Update failed")
     return updated
 
-@router.delete("/{slug}", status_code=204)
+@router.delete(
+    "/{slug}",
+    status_code=204,
+    dependencies=[Security(require_scopes("delete:category"))],
+)
 async def delete_category_by_slug(
     slug: str,
     service: CategoryService = Depends(get_category_service)

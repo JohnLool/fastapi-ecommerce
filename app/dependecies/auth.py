@@ -33,6 +33,9 @@ ADDITIONAL_SCOPES: dict[Role, list[str]] = {
     ],
     Role.owner: [
         "*",
+        "create:category",
+        "update:category",
+        "delete:category",
     ],
 }
 

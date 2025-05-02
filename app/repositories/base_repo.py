@@ -63,6 +63,15 @@ class BaseRepository(AbstractRepository[Model], Generic[Model]):
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
 
+    async def get_one_by_filters(self, *filters, options: Optional[Sequence] = None) -> Optional[Model]:
+        base_filters = [self.model.deleted.is_(False)]
+        if filters:
+            base_filters.extend(filters)
+        stmt = select(self.model).where(*base_filters)
+        stmt = self._apply_options(stmt, options)
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none()
+
     async def update(self, item_id: int, item_data: dict) -> Optional[Model]:
         item = await self.get_by_id(item_id)
         if not item:

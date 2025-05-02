@@ -9,9 +9,6 @@ from app.models.role_request import RequestStatus
 class RoleRequestCreate(BaseModel):
     role: Role
 
-class RoleRequestProcess(BaseModel):
-    approve: bool
-
 class RoleRequestOut(BaseModel):
     id: int
     user_id: int

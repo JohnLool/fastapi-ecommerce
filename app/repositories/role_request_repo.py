@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.repositories.base_repo import BaseRepository
 from app.models.role_request import RoleRequestOrm
-from app.schemas.role_request import RoleRequestOut
+
 from app.utils.logger import logger
 
 

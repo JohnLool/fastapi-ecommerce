@@ -2,11 +2,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import RoleRequestOrm
 from app.models.role_request import RequestStatus
+from app.models.user import Role, UserOrm
 from app.repositories.role_request_repo import RoleRequestRepository
 from app.repositories.user_repo import UserRepository
 from app.schemas.role_request import RoleRequestOut, RoleRequestCreate
 from app.services.base_service import BaseService
-from app.utils.exceptions import RequestNotFoundError, RequestAlreadyProcessedError, DuplicateRoleRequestError
+from app.utils.exceptions import RequestNotFoundError, RequestAlreadyProcessedError, DuplicateRoleRequestError, \
+    ForbiddenRoleRequestError
 
 
 class RoleRequestService(BaseService[RoleRequestRepository]):
@@ -29,16 +31,19 @@ class RoleRequestService(BaseService[RoleRequestRepository]):
 
         return await super().get_by_id(request_id)
 
-    async def create_request(self, data: RoleRequestCreate, user_id: int) -> RoleRequestOut:
+    async def create_request(self, request: RoleRequestCreate, user: UserOrm) -> RoleRequestOut:
+        if request.role != Role.seller or user.role != Role.customer:
+            raise ForbiddenRoleRequestError()
+
         existing = await self.repository.get_one_by_filters([
-            RoleRequestOrm.user_id == user_id,
-            RoleRequestOrm.desired_role == data.role,
+            RoleRequestOrm.user_id == user.id,
+            RoleRequestOrm.desired_role == request.role,
             RoleRequestOrm.status == RequestStatus.pending
         ])
         if existing:
             raise DuplicateRoleRequestError()
 
-        request_dict = data.model_dump()
-        request_dict['user_id'] = user_id
+        request_dict = request.model_dump()
+        request_dict['user_id'] = user.id
 
         return await super().create(request_dict)

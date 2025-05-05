@@ -6,3 +6,6 @@ class RequestAlreadyProcessedError(Exception):
 
 class DuplicateRoleRequestError(Exception):
     pass
+
+class ForbiddenRoleRequestError(Exception):
+    pass

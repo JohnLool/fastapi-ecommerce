@@ -10,7 +10,8 @@ from app.schemas.role_request import RoleRequestOut, RoleRequestCreate
 from app.schemas.user import UserOut, UserCreate, UserUpdate
 from app.services.role_request_service import RoleRequestService
 from app.services.user_service import UserService
-from app.utils.exceptions import DuplicateRoleRequestError, RequestNotFoundError, RequestAlreadyProcessedError
+from app.utils.exceptions import DuplicateRoleRequestError, RequestNotFoundError, RequestAlreadyProcessedError, \
+    ForbiddenRoleRequestError
 
 router = APIRouter(prefix="/users", tags=["user"])
 
@@ -64,10 +65,11 @@ async def create_request(
         service: RoleRequestService = Depends(get_role_request_service),
 ):
     try:
-        return await service.create_request(request, current_user.id)
+        return await service.create_request(request, current_user)
     except DuplicateRoleRequestError:
         raise HTTPException(status_code=400, detail="Request already exists")
-
+    except ForbiddenRoleRequestError:
+        raise HTTPException(status_code=400, detail=f"You cannot request role: {request.role}")
 @router.patch(
     "/roles/requests/{request_id}",
     response_model=RoleRequestOut,

@@ -32,14 +32,16 @@ class RoleRequestService(BaseService[RoleRequestRepository]):
         return await super().get_by_id(request_id)
 
     async def create_request(self, request: RoleRequestCreate, user: UserOrm) -> RoleRequestOut:
-        if request.role != Role.seller or user.role != Role.customer:
+        if request.desired_role != Role.seller or user.role != Role.customer:
             raise ForbiddenRoleRequestError()
 
-        existing = await self.repository.get_one_by_filters([
+        filters = [
             RoleRequestOrm.user_id == user.id,
-            RoleRequestOrm.desired_role == request.role,
-            RoleRequestOrm.status == RequestStatus.pending
-        ])
+            RoleRequestOrm.desired_role == request.desired_role,
+            RoleRequestOrm.status == RequestStatus.pending,
+        ]
+        existing = await self.repository.get_one_by_filters(*filters)
+
         if existing:
             raise DuplicateRoleRequestError()
 

@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.params import Security
 from fastapi.security import OAuth2PasswordRequestForm
 
 from app.core.authx_security import security
@@ -10,8 +9,8 @@ from app.schemas.role_request import RoleRequestOut, RoleRequestCreate
 from app.schemas.user import UserOut, UserCreate, UserUpdate
 from app.services.role_request_service import RoleRequestService
 from app.services.user_service import UserService
-from app.utils.exceptions import DuplicateRoleRequestError, RequestNotFoundError, RequestAlreadyProcessedError, \
-    ForbiddenRoleRequestError
+from app.utils.exceptions import DuplicateRoleRequestError, ForbiddenRoleRequestError
+
 
 router = APIRouter(prefix="/users", tags=["user"])
 
@@ -58,7 +57,7 @@ async def login_for_user_tokens(
     )
     return {"access_token": token, "token_type": "bearer"}
 
-@router.post("/roles/requests", response_model=RoleRequestOut)
+@router.post("/role-requests", response_model=RoleRequestOut)
 async def create_request(
         request: RoleRequestCreate,
         current_user: UserOrm = Depends(require_scopes("create:role_request")),
@@ -70,20 +69,3 @@ async def create_request(
         raise HTTPException(status_code=400, detail="Request already exists")
     except ForbiddenRoleRequestError:
         raise HTTPException(status_code=400, detail=f"You cannot request this role")
-
-@router.patch(
-    "/roles/requests/{request_id}",
-    response_model=RoleRequestOut,
-    dependencies=[Security(require_scopes("update:role"))],
-)
-async def process_request(
-        request_id: int,
-        approve: bool,
-        service: RoleRequestService = Depends(get_role_request_service),
-):
-    try:
-        return await service.process_request(request_id, approve)
-    except RequestNotFoundError:
-        raise HTTPException(status_code=404, detail="Request not found")
-    except RequestAlreadyProcessedError:
-        raise HTTPException(status_code=400, detail="Request already processed")

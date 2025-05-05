@@ -31,7 +31,8 @@ ADDITIONAL_SCOPES: dict[Role, list[str]] = {
     ],
     Role.admin: [
         "ban:user",
-        "update:role"
+        "update:role",
+        "read:role_requests",
     ],
     Role.owner: [
         "*",

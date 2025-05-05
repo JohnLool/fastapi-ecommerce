@@ -109,7 +109,7 @@ def require_scopes(*required: str):
             if scope not in token_scopes:
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
-                    detail=f"Not enough permissions: {scope}",
+                    detail=f"Not enough permissions",
                 )
         return current_user
     return checker

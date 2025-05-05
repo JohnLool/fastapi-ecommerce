@@ -69,7 +69,8 @@ async def create_request(
     except DuplicateRoleRequestError:
         raise HTTPException(status_code=400, detail="Request already exists")
     except ForbiddenRoleRequestError:
-        raise HTTPException(status_code=400, detail=f"You cannot request role: {request.role}")
+        raise HTTPException(status_code=400, detail=f"You cannot request this role")
+
 @router.patch(
     "/roles/requests/{request_id}",
     response_model=RoleRequestOut,

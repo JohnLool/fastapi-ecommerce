@@ -7,7 +7,7 @@ from app.models.role_request import RequestStatus
 
 
 class RoleRequestCreate(BaseModel):
-    role: Role
+    role: Role = "seller"
 
 class RoleRequestOut(BaseModel):
     id: int

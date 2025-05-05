@@ -12,17 +12,32 @@ from app.utils.exceptions import RequestNotFoundError, RequestAlreadyProcessedEr
 router = APIRouter(prefix="/role-requests", tags=["role_requests"])
 
 @router.patch(
-    "/{request_id}",
+    "/{request_id}/reject",
     response_model=RoleRequestOut,
     dependencies=[Security(require_scopes("update:role"))],
 )
-async def process_request(
+async def reject_request(
         request_id: int,
-        approve: bool,
         service: RoleRequestService = Depends(get_role_request_service),
 ):
     try:
-        return await service.process_request(request_id, approve)
+        return await service.process_request(request_id, False)
+    except RequestNotFoundError:
+        raise HTTPException(status_code=404, detail="Request not found")
+    except RequestAlreadyProcessedError:
+        raise HTTPException(status_code=400, detail="Request already processed")
+
+@router.patch(
+    "/{request_id}/approve",
+    response_model=RoleRequestOut,
+    dependencies=[Security(require_scopes("update:role"))],
+)
+async def approve_request(
+        request_id: int,
+        service: RoleRequestService = Depends(get_role_request_service),
+):
+    try:
+        return await service.process_request(request_id, True)
     except RequestNotFoundError:
         raise HTTPException(status_code=404, detail="Request not found")
     except RequestAlreadyProcessedError:

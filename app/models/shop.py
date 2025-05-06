@@ -3,7 +3,6 @@ from sqlalchemy import String, Integer, ForeignKey, func, Boolean, Index
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
-from app.models.user import UserOrm
 
 
 class ShopOrm(Base):
@@ -26,4 +25,4 @@ class ShopOrm(Base):
     updated_at: Mapped[datetime | None] = mapped_column(onupdate=func.now())
     deleted: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
-    owner = relationship(UserOrm, back_populates='shops')
+    owner: Mapped["UserOrm"] = relationship("UserOrm", back_populates='shops')

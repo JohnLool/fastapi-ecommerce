@@ -1,10 +1,12 @@
+from __future__ import annotations
+
 from datetime import datetime
 from enum import Enum
 
 from sqlalchemy import Integer, Enum as SqlEnum, ForeignKey, func, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.database import Base
-from app.models.user import Role, UserOrm
+from app.models.user import Role
 
 
 class RequestStatus(str, Enum):
@@ -24,4 +26,4 @@ class RoleRequestOrm(Base):
     processed_at: Mapped[datetime | None] = mapped_column(onupdate=func.now(), nullable=True)
     deleted: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
-    user: Mapped[UserOrm] = relationship("UserOrm", back_populates="role_requests")
+    user: Mapped["UserOrm"] = relationship("UserOrm", back_populates="role_requests")

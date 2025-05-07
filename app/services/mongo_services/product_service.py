@@ -24,6 +24,7 @@ class ProductService(BaseService[ProductRepository]):
         await product.fetch_link(Product.category)
         product_dict = product.model_dump(by_alias=True)
         product_dict["category"] = product.category.slug
+        product_dict["image_url"] = product.image_url
         return ProductOut.model_validate(product_dict)
 
     async def get_all(self, *filters: Any) -> List[ProductOut]:

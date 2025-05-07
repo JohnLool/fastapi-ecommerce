@@ -28,6 +28,7 @@ class ProductOut(ProductBase):
     slug: str = Field(...)
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
+    image_url: Optional[str] = None
 
     model_config = ConfigDict(
         validate_by_name=True,

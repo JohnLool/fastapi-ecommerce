@@ -15,6 +15,7 @@ class Product(Document):
     description: str = Field("")
     price: float = Field(..., ge=0)
     in_stock: int = Field(0, ge=0)
+    image_url: Optional[str] = Field(None)
 
     category: Optional[Link[Category]] = Field(None)
     created_at: datetime = Field(None)

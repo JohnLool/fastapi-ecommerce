@@ -9,8 +9,8 @@ class CartItemRepository(BaseRepository[CartItemOrm]):
     def __init__(self, session: AsyncSession):
         super().__init__(CartItemOrm, session)
 
-    async def get_for_cart_and_product(self, cart_id: int, product_id: str) -> Optional[CartItemOrm]:
+    async def get_for_cart_and_slug(self, cart_id: int, product_slug: str) -> Optional[CartItemOrm]:
         return await self.get_one_by_filters(
             self.model.cart_id == cart_id,
-            self.model.product_id == product_id
+            self.model.product_slug == product_slug
         )

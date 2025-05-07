@@ -11,6 +11,8 @@ from app.core.database import Base
 from app.models.user import UserOrm
 from app.models.shop import ShopOrm
 from app.models.role_request import RoleRequestOrm
+from app.models.cart import CartOrm
+from app.models.cart_item import CartItemOrm
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

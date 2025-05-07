@@ -10,7 +10,7 @@ class AddCartItemIn(BaseModel):
 
 class CartItemOut(BaseModel):
     id: int
-    product_id: str
+    product_slug: str
     quantity: int
     title_snapshot: str
     image_snapshot: Optional[str]
@@ -26,3 +26,7 @@ class CartOut(BaseModel):
     items: List[CartItemOut]
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
+
+    model_config = ConfigDict(
+        from_attributes=True
+    )

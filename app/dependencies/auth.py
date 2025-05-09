@@ -4,7 +4,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 
 from app.core.authx_security import security
-from app.dependecies.services import get_user_service
+from app.dependencies.services import get_user_service
 from app.models.user import UserOrm, Role
 from app.services.user_service import UserService
 

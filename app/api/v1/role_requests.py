@@ -2,8 +2,8 @@ from typing import List
 
 from fastapi import Security, Depends, HTTPException, APIRouter
 
-from app.dependecies.auth import require_scopes
-from app.dependecies.services import get_role_request_service
+from app.dependencies.auth import require_scopes
+from app.dependencies.services import get_role_request_service
 from app.schemas.role_request import RoleRequestOut
 from app.services.role_request_service import RoleRequestService
 from app.utils.exceptions import RequestNotFoundError, RequestAlreadyProcessedError

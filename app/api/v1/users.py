@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 
 from app.core.authx_security import security
-from app.dependecies.auth import get_current_user, require_scopes, get_scopes_for_role
-from app.dependecies.services import get_user_service, get_role_request_service
+from app.dependencies.auth import get_current_user, require_scopes, get_scopes_for_role
+from app.dependencies.services import get_user_service, get_role_request_service
 from app.models import UserOrm
 from app.schemas.role_request import RoleRequestOut, RoleRequestCreate
 from app.schemas.user import UserOut, UserCreate, UserUpdate

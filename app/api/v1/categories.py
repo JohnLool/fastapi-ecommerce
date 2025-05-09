@@ -1,8 +1,8 @@
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, Security
 
-from app.dependecies.auth import require_scopes
-from app.dependecies.services import get_category_service
+from app.dependencies.auth import require_scopes
+from app.dependencies.services import get_category_service
 from app.services.mongo_services.category_service import CategoryService
 from app.schemas.category import CategoryCreate, CategoryUpdate, CategoryOut
 

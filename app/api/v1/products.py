@@ -2,9 +2,9 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.params import Security
 
-from app.dependecies.auth import require_scopes
-from app.dependecies.services import get_product_service
-from app.dependecies.validate_ownership import validate_shop_ownership, validate_product_ownership
+from app.dependencies.auth import require_scopes
+from app.dependencies.services import get_product_service
+from app.dependencies.validate_ownership import validate_shop_ownership, validate_product_ownership
 from app.schemas.shop import ShopOut
 from app.services.mongo_services.product_service import ProductService
 from app.schemas.product import ProductCreate, ProductUpdate, ProductOut

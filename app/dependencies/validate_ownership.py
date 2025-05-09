@@ -1,7 +1,7 @@
 from fastapi import Depends, HTTPException
 
-from app.dependecies.auth import get_current_user
-from app.dependecies.services import get_shop_service, get_product_service
+from app.dependencies.auth import get_current_user
+from app.dependencies.services import get_shop_service, get_product_service
 from app.models import UserOrm
 from app.schemas.product import ProductOut
 from app.schemas.shop import ShopOut

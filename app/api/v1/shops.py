@@ -2,9 +2,9 @@ from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, Security
 
-from app.dependecies.auth import require_scopes
-from app.dependecies.services import get_shop_service
-from app.dependecies.validate_ownership import validate_shop_ownership
+from app.dependencies.auth import require_scopes
+from app.dependencies.services import get_shop_service
+from app.dependencies.validate_ownership import validate_shop_ownership
 from app.models import UserOrm
 from app.schemas.shop import ShopOut, ShopCreate, ShopUpdate
 from app.services.shop_service import ShopService

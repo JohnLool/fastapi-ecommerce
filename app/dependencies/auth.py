@@ -7,7 +7,7 @@ from app.core.authx_security import security
 from app.dependencies.services import get_user_service
 from app.models.user import UserOrm, Role
 from app.services.user_service import UserService
-
+from app.utils.logger import logger
 
 oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl="/api/v1/users/login",
@@ -22,7 +22,7 @@ ADDITIONAL_SCOPES: dict[Role, list[str]] = {
         "create:role_request",
         "read:cart",
         "delete:cart",
-        "add:cart_item"
+        "add:cart_item",
         "update:cart_item",
         "delete:cart_item",
     ],
@@ -79,13 +79,13 @@ async def get_payload(
         payload = security.verify_token(req)
         return payload
     except AuthXException as e:
-        print(f"AuthX error: {e}")
+        logger.warning(f"AuthX error: {e}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or expired token",
         )
     except Exception as e:
-        print(f"Unexpected error: {e}")
+        logger.warning(f"Unexpected error: {e}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token processing error",

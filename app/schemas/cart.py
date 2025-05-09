@@ -8,12 +8,15 @@ class AddCartItemIn(BaseModel):
     product_slug: str
     quantity: int = Field(..., gt=0, le=100)
 
+class UpdateCartItemIn(BaseModel):
+    quantity: int = Field(..., gt=0, le=100)
+
 class CartItemOut(BaseModel):
     id: int
     product_slug: str
     quantity: int
     title_snapshot: str
-    image_snapshot: Optional[str]
+    image_snapshot: Optional[str] = None
     price_snapshot: float
 
     model_config = ConfigDict(

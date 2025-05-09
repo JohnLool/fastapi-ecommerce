@@ -16,7 +16,7 @@ class ProductService(BaseService[ProductRepository]):
         super().__init__(repo, ProductOut)
         self.category_repo = CategoryRepository()
 
-    async def get_by_slug(self, slug: str) -> ProductOut:
+    async def get_by_slug(self, slug: str) -> Optional[ProductOut]:
         product = await self.repository.get_by_slug(slug)
         if not product:
             logger.warning(f"Service: Product with slug {slug} not found")
@@ -26,6 +26,9 @@ class ProductService(BaseService[ProductRepository]):
         product_dict["category"] = product.category.slug
         product_dict["image_url"] = product.image_url
         return ProductOut.model_validate(product_dict)
+
+    async def get_raw_by_slug(self, slug: str) -> Optional[Product]:
+        return await self.repository.get_by_slug(slug)
 
     async def get_all(self, *filters: Any) -> List[ProductOut]:
         logger.info(f"ProductService: Getting all products")

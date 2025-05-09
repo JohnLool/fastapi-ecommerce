@@ -20,6 +20,11 @@ ADDITIONAL_SCOPES: dict[Role, list[str]] = {
         "read:orders",
         "read:profile",
         "create:role_request",
+        "read:cart",
+        "delete:cart",
+        "add:cart_item"
+        "update:cart_item",
+        "delete:cart_item",
     ],
     Role.seller: [
         "create:product",

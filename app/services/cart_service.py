@@ -2,7 +2,7 @@ from typing import Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.product import Product
+from app.schemas.product import ProductOut
 from app.services.base_service import BaseService
 from app.repositories.cart_repo import CartRepository
 from app.repositories.cart_item_repo import CartItemRepository
@@ -17,7 +17,7 @@ class CartService(BaseService[CartRepository]):
     async def add_item(
         self,
         user_id: int,
-        product: Product,
+        product: ProductOut,
         quantity: int = 1
     ) -> Optional[CartItemOut]:
         cart = await self.repository.get_or_create_by_user(user_id)

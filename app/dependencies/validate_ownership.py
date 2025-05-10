@@ -18,9 +18,9 @@ async def validate_shop_ownership(
 ) -> ShopOrm:
     shop = await shop_repo.get_by_slug(shop_slug)
     if not shop:
-        raise HTTPException(status_code=404, detail="Shop not found")
+        raise HTTPException(404, "Shop not found")
     if shop.owner_id != current_user.id:
-        raise HTTPException(status_code=403, detail="Not enough permissions")
+        raise HTTPException(403, "Not enough permissions")
     return shop
 
 async def validate_product_ownership(

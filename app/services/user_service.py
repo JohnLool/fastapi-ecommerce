@@ -57,3 +57,6 @@ class UserService(BaseService[UserRepository]):
             return None
 
         return user
+
+    async def set_role(self, user_id: int):
+        return await self.repository.set_role(user_id, "seller")

@@ -3,9 +3,10 @@ from typing import List
 from fastapi import Security, Depends, HTTPException, APIRouter
 
 from app.dependencies.auth import require_scopes
-from app.dependencies.services import get_role_request_service
+from app.dependencies.services import get_role_request_service, get_user_service
 from app.schemas.role_request import RoleRequestOut
 from app.services.role_request_service import RoleRequestService
+from app.services.user_service import UserService
 from app.utils.exceptions import RequestNotFoundError, RequestAlreadyProcessedError
 
 
@@ -34,10 +35,13 @@ async def reject_request(
 )
 async def approve_request(
         request_id: int,
-        service: RoleRequestService = Depends(get_role_request_service),
+        role_req_svc: RoleRequestService = Depends(get_role_request_service),
+        user_svc: UserService = Depends(get_user_service),
 ):
     try:
-        return await service.process_request(request_id, True)
+        request =  await role_req_svc.process_request(request_id, True)
+        await user_svc.set_role(request.user_id)
+        return request
     except RequestNotFoundError:
         raise HTTPException(status_code=404, detail="Request not found")
     except RequestAlreadyProcessedError:

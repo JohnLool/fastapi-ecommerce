@@ -4,7 +4,7 @@ from app.models import RoleRequestOrm
 from app.models.role_request import RequestStatus
 from app.models.user import Role, UserOrm
 from app.repositories.role_request_repo import RoleRequestRepository
-from app.repositories.user_repo import UserRepository
+
 from app.schemas.role_request import RoleRequestOut, RoleRequestCreate
 from app.services.base_service import BaseService
 from app.utils.exceptions import RequestNotFoundError, RequestAlreadyProcessedError, DuplicateRoleRequestError, \
@@ -14,7 +14,6 @@ from app.utils.exceptions import RequestNotFoundError, RequestAlreadyProcessedEr
 class RoleRequestService(BaseService[RoleRequestRepository]):
     def __init__(self, db: AsyncSession):
         super().__init__(RoleRequestRepository(db), RoleRequestOut)
-        self.user_repo = UserRepository(db)
 
     async def process_request(self, request_id: int, approve: bool) -> RoleRequestOut:
         req = await self.repository.get_by_id(request_id)
@@ -25,7 +24,6 @@ class RoleRequestService(BaseService[RoleRequestRepository]):
 
         if approve:
             await self.repository.set_status(request_id, RequestStatus.approved)
-            await self.user_repo.set_role(req.user_id, req.desired_role)
         else:
             await self.repository.set_status(request_id, RequestStatus.rejected)
 

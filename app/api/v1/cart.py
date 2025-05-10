@@ -31,7 +31,7 @@ async def add_item(
     cart_service: CartService = Depends(get_cart_service),
     prod_service: ProductService = Depends(get_product_service),
 ):
-    product = await prod_service.get_raw_by_slug(item_to_add.product_slug)
+    product = await prod_service.get_by_slug(item_to_add.product_slug)
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
 

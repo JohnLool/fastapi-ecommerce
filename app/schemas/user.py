@@ -2,6 +2,8 @@ from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, ConfigDict, Field, EmailStr
 
+from app.models.user import Role
+
 
 class UserBase(BaseModel):
     username: str = Field(..., min_length=5, max_length=255)
@@ -14,6 +16,7 @@ class UserCreate(UserBase):
 
 class UserOut(UserBase):
     id: int
+    role: Role
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 

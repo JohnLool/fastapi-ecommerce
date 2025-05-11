@@ -19,7 +19,11 @@ class RoleRequestOrm(Base):
     __tablename__ = "role_requests"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True
+    )
     desired_role: Mapped[Role] = mapped_column(SqlEnum(Role, name="role_enum"), nullable=False)
     status: Mapped[RequestStatus] = mapped_column(SqlEnum(RequestStatus), default=RequestStatus.pending, nullable=False)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())

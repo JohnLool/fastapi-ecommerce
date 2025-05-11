@@ -14,7 +14,7 @@ router = APIRouter(prefix="/shops", tags=["shop"])
 
 
 @router.get("", response_model=List[ShopOut])
-async def get_shops(
+async def list_shops(
         shop_service: ShopService = Depends(get_shop_service),
 ):
     return await shop_service.get_all()

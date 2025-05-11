@@ -53,11 +53,8 @@ class CartService(BaseService[CartRepository]):
             return None
         return CartItemOut.model_validate(updated)
 
-    async def remove_item(self, item_id: int) -> Optional[CartItemOut]:
-        removed = await self.item_repo.delete(item_id)
-        if not removed:
-            return None
-        return CartItemOut.model_validate(removed)
+    async def remove_item(self, item_id: int) -> bool:
+        return await self.item_repo.hard_delete(item_id)
 
     async def clear_cart(self, user_id: int) -> Optional[CartOut]:
         cart = await self.repository.get_by_user_id(user_id)
@@ -65,7 +62,7 @@ class CartService(BaseService[CartRepository]):
             return None
 
         for item in list(cart.items):
-            await self.item_repo.delete(item.id)
+            await self.item_repo.hard_delete(item.id)
 
         cart = await self.repository.get_by_user_id(user_id)
         return CartOut.model_validate(cart)

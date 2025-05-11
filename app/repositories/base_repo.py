@@ -5,7 +5,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.repositories.abstract_repo import AbstractRepository
 from app.utils.logger import logger
 
-
 Model = TypeVar("Model")
 
 class BaseRepository(AbstractRepository[Model], Generic[Model]):
@@ -17,6 +16,14 @@ class BaseRepository(AbstractRepository[Model], Generic[Model]):
     def _apply_options(self, stmt, options: Optional[Sequence] = None):
         opts = options or self.default_options
         return stmt.options(*opts)
+
+    def _build_filters(self, *filters) -> List[Any]:
+        base_filters: List[Any] = []
+        if hasattr(self.model, "deleted"):
+            base_filters.append(self.model.deleted.is_(False))
+        if filters:
+            base_filters.extend(filters)
+        return base_filters
 
     async def create(self, data: dict) -> Optional[Model]:
         logger.info(f"Creating {self.model.__name__} with data: {data}")
@@ -31,42 +38,52 @@ class BaseRepository(AbstractRepository[Model], Generic[Model]):
             await self.session.rollback()
             raise
 
-    async def get_by_field(self, field: str, value: Any, *filters, options: Optional[Sequence] = None) -> Optional[Model]:
+    async def get_by_field(
+        self,
+        field: str,
+        value: Any,
+        *filters,
+        options: Optional[Sequence] = None
+    ) -> Optional[Model]:
         if not hasattr(self.model, field):
             raise ValueError(f"Field {field} not found in model")
-
-        base_filters = [self.model.deleted.is_(False)]
-        if filters:
-            base_filters.extend(filters)
-
-        stmt = select(self.model).where(getattr(self.model, field) == value)
-        stmt = stmt.where(*base_filters)
-        stmt = self._apply_options(stmt, options)
-        result = await self.session.execute(stmt)
-        return result.scalar_one_or_none()
-
-    async def get_all(self, *filters, options: Optional[Sequence] = None) -> List[Model]:
-        base_filters = [self.model.deleted.is_(False)]
-        if filters:
-            base_filters.extend(filters)
-        stmt = select(self.model).where(*base_filters).distinct()
-        stmt = self._apply_options(stmt, options)
-        result = await self.session.execute(stmt)
-        return list(result.scalars().all())
-
-    async def get_by_id(self, item_id: int, *filters, options: Optional[Sequence] = None) -> Optional[Model]:
-        base_filters = [self.model.id == item_id, self.model.deleted.is_(False)]
-        if filters:
-            base_filters.extend(filters)
+        base_filters = [getattr(self.model, field) == value]
+        base_filters.extend(self._build_filters(*filters))
         stmt = select(self.model).where(*base_filters)
         stmt = self._apply_options(stmt, options)
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
 
-    async def get_one_by_filters(self, *filters, options: Optional[Sequence] = None) -> Optional[Model]:
-        base_filters = [self.model.deleted.is_(False)]
-        if filters:
-            base_filters.extend(filters)
+    async def get_all(
+        self,
+        *filters,
+        options: Optional[Sequence] = None
+    ) -> List[Model]:
+        base_filters = self._build_filters(*filters)
+        stmt = select(self.model).where(*base_filters).distinct()
+        stmt = self._apply_options(stmt, options)
+        result = await self.session.execute(stmt)
+        return list(result.scalars().all())
+
+    async def get_by_id(
+        self,
+        item_id: int,
+        *filters,
+        options: Optional[Sequence] = None
+    ) -> Optional[Model]:
+        base_filters = [self.model.id == item_id]
+        base_filters.extend(self._build_filters(*filters))
+        stmt = select(self.model).where(*base_filters)
+        stmt = self._apply_options(stmt, options)
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none()
+
+    async def get_one_by_filters(
+        self,
+        *filters,
+        options: Optional[Sequence] = None
+    ) -> Optional[Model]:
+        base_filters = self._build_filters(*filters)
         stmt = select(self.model).where(*base_filters)
         stmt = self._apply_options(stmt, options)
         result = await self.session.execute(stmt)
@@ -92,9 +109,7 @@ class BaseRepository(AbstractRepository[Model], Generic[Model]):
         item = await self.get_by_id(item_id)
         if not item:
             return None
-
-        logger.info(f"Deleting {self.model.__name__} with id {item_id}")
-
+        logger.info(f"Soft deleting {self.model.__name__} with id {item_id}")
         try:
             item.deleted = True
             await self.session.commit()
@@ -102,5 +117,20 @@ class BaseRepository(AbstractRepository[Model], Generic[Model]):
             return item
         except SQLAlchemyError as e:
             logger.error(f"Error deleting {self.model.__name__} with id {item_id}: {e}")
+            await self.session.rollback()
+            raise
+
+    async def hard_delete(self, item_id: int) -> bool:
+        item = await self.session.get(self.model, item_id)
+        if not item:
+            return False
+
+        logger.info(f"Hard deleting {self.model.__name__} with id {item_id}")
+        try:
+            await self.session.delete(item)
+            await self.session.commit()
+            return True
+        except SQLAlchemyError as e:
+            logger.error(f"Error hard deleting {self.model.__name__} with id {item_id}: {e}")
             await self.session.rollback()
             raise

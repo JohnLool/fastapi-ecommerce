@@ -12,7 +12,6 @@ class ShopCreate(ShopBase):
 class ShopUpdate(BaseModel):
     name: Optional[str] = Field(None, max_length=255)
     description: Optional[str] = Field(None, max_length=1000)
-    deleted: Optional[bool] = False
 
 class ShopOut(ShopBase):
     id: int = Field(...)

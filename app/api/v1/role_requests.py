@@ -52,7 +52,7 @@ async def approve_request(
     response_model=List[RoleRequestOut],
     dependencies=[Security(require_scopes("read:role_requests"))],
 )
-async def get_all_requests(
+async def list_requests(
         service: RoleRequestService = Depends(get_role_request_service),
 ):
     return await service.get_all()

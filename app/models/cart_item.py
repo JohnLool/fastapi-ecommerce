@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from sqlalchemy import ForeignKey, String, UniqueConstraint, Boolean
+from decimal import Decimal
+
+from sqlalchemy import ForeignKey, String, UniqueConstraint, Boolean, Numeric
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.database import Base
 
@@ -18,7 +20,7 @@ class CartItemOrm(Base):
     deleted: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
     title_snapshot: Mapped[str]
-    price_snapshot: Mapped[float]
+    price_snapshot: Mapped[Decimal] = mapped_column(Numeric(12, 2), nullable=False)
     image_snapshot: Mapped[str | None] = mapped_column(nullable=True)
 
     cart: Mapped["CartOrm"] = relationship("CartOrm", back_populates="items")

@@ -7,6 +7,7 @@ from app.core.database import get_session
 from app.services.cart_service import CartService
 from app.services.mongo_services.category_service import CategoryService
 from app.services.mongo_services.product_service import ProductService
+from app.services.order_service import OrderService
 from app.services.role_request_service import RoleRequestService
 from app.services.shop_service import ShopService
 from app.services.user_service import UserService
@@ -23,6 +24,9 @@ async def get_shop_service(db: AsyncDB) -> ShopService:
 
 async def get_cart_service(db: AsyncDB) -> CartService:
     return CartService(db)
+
+async def get_order_service(db: AsyncDB) -> OrderService:
+    return OrderService(db)
 
 async def get_role_request_service(db: AsyncDB) -> RoleRequestService:
     return RoleRequestService(db)

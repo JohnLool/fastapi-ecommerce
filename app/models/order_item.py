@@ -21,6 +21,5 @@ class OrderItemOrm(Base):
     price_snapshot: Mapped[Decimal] = mapped_column(Numeric(12, 2), nullable=False)
     image_snapshot: Mapped[str | None] = mapped_column(String(512), nullable=True)
 
-    tax_snapshot: Mapped[Decimal] = mapped_column(Numeric(12, 2), default=Decimal("0.00"))
 
     order: Mapped["OrderOrm"] = relationship("OrderOrm", back_populates="items")

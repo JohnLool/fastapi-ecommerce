@@ -17,6 +17,7 @@ oauth2_scheme = OAuth2PasswordBearer(
 ADDITIONAL_SCOPES: dict[Role, list[str]] = {
     Role.customer: [
         "read:products",
+        "create:order",
         "read:orders",
         "read:profile",
         "create:role_request",

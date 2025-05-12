@@ -1,4 +1,5 @@
 from datetime import datetime
+from decimal import Decimal
 from typing import Optional, List
 
 from pydantic import BaseModel, Field, ConfigDict
@@ -17,7 +18,7 @@ class CartItemOut(BaseModel):
     quantity: int
     title_snapshot: str
     image_snapshot: Optional[str] = None
-    price_snapshot: float
+    price_snapshot: Decimal
 
     model_config = ConfigDict(
         from_attributes=True

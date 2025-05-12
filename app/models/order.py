@@ -35,7 +35,6 @@ class OrderOrm(Base):
 
     subtotal: Mapped[Decimal] = mapped_column(Numeric(12, 2), nullable=False)
     discount_total: Mapped[Decimal] = mapped_column(Numeric(12, 2), default=Decimal("0.00"))
-    tax_total: Mapped[Decimal] = mapped_column(Numeric(12, 2), default=Decimal("0.00"))
     delivery_fee: Mapped[Decimal] = mapped_column(Numeric(12, 2), default=Decimal("0.00"))
     grand_total: Mapped[Decimal] = mapped_column(Numeric(12, 2), nullable=False)
 
@@ -46,12 +45,8 @@ class OrderOrm(Base):
     shipping_address: Mapped[str] = mapped_column(String(1024), nullable=False)
     tracking_number: Mapped[str | None] = mapped_column(String(128), nullable=True)
 
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        server_default=func.now(),
-        onupdate=func.now()
-    )
+    created_at: Mapped[datetime] = mapped_column(server_default=func.now())
+    updated_at: Mapped[datetime | None] = mapped_column(onupdate=func.now())
 
     items: Mapped[list["OrderItemOrm"]] = relationship(
         "OrderItemOrm",

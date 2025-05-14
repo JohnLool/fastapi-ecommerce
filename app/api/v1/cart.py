@@ -3,7 +3,7 @@ from fastapi.params import Security
 
 from app.dependencies.validate_ownership import validate_item_in_cart_ownership
 from app.models import CartItemOrm, UserOrm
-from app.schemas.cart import CartOut, CartItemOut, AddCartItemIn, UpdateCartItemIn
+from app.schemas.cart import CartOut, CartItemOut, AddCartItemIn, UpdateCartItem
 from app.services.cart_service import CartService
 
 from app.dependencies.services import get_cart_service, get_product_service
@@ -35,7 +35,10 @@ async def add_item(
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
 
-    return await cart_service.add_item(current_user.id, product, item_to_add.quantity)
+    cart_item = await cart_service.add_item(current_user.id, product, item_to_add.quantity)
+    if not cart_item:
+        raise HTTPException(status_code=400, detail="Cart item creation failed")
+    return cart_item
 
 @router.patch(
     "/items/{item_id}",
@@ -43,7 +46,7 @@ async def add_item(
     dependencies=[Security(require_scopes("update:cart_item"))],
 )
 async def update_item(
-    item_to_update: UpdateCartItemIn,
+    item_to_update: UpdateCartItem,
     item: CartItemOrm = Depends(validate_item_in_cart_ownership),
     cart_service: CartService = Depends(get_cart_service),
 ):

@@ -1,8 +1,8 @@
 from decimal import Decimal
+from typing import Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import OrderOrm, OrderItemOrm
 from app.repositories.order_repo import OrderRepository
 from app.schemas.cart import CartOut
 
@@ -19,7 +19,7 @@ class OrderService(BaseService[OrderRepository]):
         self,
         cart: CartOut,
         order_data: OrderCreate
-    ) -> OrderOut:
+    ) -> Optional[OrderOut]:
         if not cart.items:
             return None
 
@@ -34,10 +34,10 @@ class OrderService(BaseService[OrderRepository]):
             for item in cart.items
         ]
 
-        subtotal      = sum(item.price_snapshot * item.quantity for item in cart.items)
-        discount_total= Decimal("0.00")
-        delivery_fee  = Decimal("0.00")
-        grand_total   = subtotal - discount_total + delivery_fee
+        subtotal = sum(item.price_snapshot * item.quantity for item in cart.items)
+        discount_total = Decimal("0.00")
+        delivery_fee = Decimal("0.00")
+        grand_total = subtotal - discount_total + delivery_fee
 
         order_orm = await self.repository.create_order_with_items(
             user_id=cart.user_id,

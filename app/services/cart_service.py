@@ -20,11 +20,16 @@ class CartService(BaseService[CartRepository]):
         product: ProductOut,
         quantity: int = 1
     ) -> Optional[CartItemOut]:
+        if product.in_stock < quantity:
+            return None
+
         cart = await self.repository.get_or_create_by_user(user_id)
 
         existing = await self.item_repo.get_for_cart_and_slug(cart.id, product.slug)
         if existing:
             new_qty = existing.quantity + quantity
+            if product.in_stock < new_qty:
+                return None
             updated = await self.item_repo.update(existing.id, {"quantity": new_qty})
             if not updated:
                 return None

@@ -9,7 +9,7 @@ class AddCartItemIn(BaseModel):
     product_slug: str
     quantity: int = Field(..., gt=0, le=100)
 
-class UpdateCartItemIn(BaseModel):
+class UpdateCartItem(BaseModel):
     quantity: int = Field(..., gt=0, le=100)
 
 class CartItemOut(BaseModel):

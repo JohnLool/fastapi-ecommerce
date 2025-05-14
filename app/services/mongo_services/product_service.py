@@ -16,6 +16,14 @@ class ProductService(BaseService[ProductRepository]):
         super().__init__(repo, ProductOut)
         self.category_repo = CategoryRepository()
 
+    async def check_stock(self, slug: str, required_quantity: int) -> Optional[ProductOut]:
+        product = await self.repository.get_by_slug(slug)
+        if not product:
+            return None
+        if product.in_stock < required_quantity:
+            return None
+        return product
+
     async def get_by_slug(self, slug: str) -> Optional[ProductOut]:
         product = await self.repository.get_by_slug(slug)
         if not product:

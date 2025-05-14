@@ -20,6 +20,10 @@ class OrderStatus(str, Enum):
     cancelled = "cancelled"
     returned = "returned"
 
+class PaymentMethod(str, Enum):
+    card = "card"
+    sbp = "sbp"
+    crypto = "crypto"
 
 class OrderOrm(Base):
     __tablename__ = "orders"
@@ -38,7 +42,11 @@ class OrderOrm(Base):
     delivery_fee: Mapped[Decimal] = mapped_column(Numeric(12, 2), default=Decimal("0.00"))
     grand_total: Mapped[Decimal] = mapped_column(Numeric(12, 2), nullable=False)
 
-    payment_method: Mapped[str] = mapped_column(String(50), nullable=True)
+    payment_method: Mapped[PaymentMethod] = mapped_column(
+        SqlEnum(PaymentMethod, name="payment_method_enum"),
+        nullable=False
+    )
+
     payment_status: Mapped[str] = mapped_column(String(50), nullable=True)
     paid_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 

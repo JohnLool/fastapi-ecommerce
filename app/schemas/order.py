@@ -4,7 +4,7 @@ from decimal import Decimal
 from pydantic import BaseModel, ConfigDict
 from typing import List, Optional
 
-from app.models.order import OrderStatus
+from app.models.order import OrderStatus, PaymentMethod
 
 
 class OrderItemOut(BaseModel):
@@ -19,7 +19,7 @@ class OrderItemOut(BaseModel):
 
 class OrderCreate(BaseModel):
     shipping_address: str
-    payment_method: Optional[str] = None
+    payment_method: PaymentMethod
 
 class OrderOut(BaseModel):
     id: int
@@ -31,7 +31,7 @@ class OrderOut(BaseModel):
     delivery_fee: Decimal
     grand_total: Decimal
 
-    payment_method: Optional[str] = None
+    payment_method: PaymentMethod
     payment_status: Optional[str] = None
 
     paid_at: Optional[datetime] = None

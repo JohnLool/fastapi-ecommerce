@@ -1,8 +1,10 @@
 from typing import List, Any, Optional
 from uuid import uuid4
 
+from bson import Decimal128
 from slugify import slugify
 
+from app.exceptions import WrongTypeError, UnexpectedAttributeError, MissingAttributeError
 from app.models.product import Product
 from app.repositories.mongo_repos.category_repo import CategoryRepository
 from app.repositories.mongo_repos.product_repo import ProductRepository
@@ -15,6 +17,35 @@ class ProductService(BaseService[ProductRepository]):
     def __init__(self, repo: ProductRepository = ProductRepository()):
         super().__init__(repo, ProductOut)
         self.category_repo = CategoryRepository()
+
+    @staticmethod
+    async def validate_product_attributes(product: Product) -> None:
+        if not product.category:
+            return
+
+        await product.fetch_link(Product.category)
+        cat = product.category
+        defs = cat.attributes
+        defs_map = {d.slug: d for d in defs}
+
+        for d in defs:
+            if d.required and d.slug not in product.attributes:
+                raise MissingAttributeError(d.slug)
+
+        for key in product.attributes:
+            if key not in defs_map:
+                raise UnexpectedAttributeError(key)
+
+        for slug, value in product.attributes.items():
+            expected = defs_map[slug].type
+            if expected == "int" and not isinstance(value, int):
+                raise WrongTypeError(slug, "int")
+            if expected == "float" and not isinstance(value, float):
+                raise WrongTypeError(slug, "float")
+            if expected == "bool" and not isinstance(value, bool):
+                raise WrongTypeError(slug, "bool")
+            if expected == "str" and not isinstance(value, str):
+                raise WrongTypeError(slug, "str")
 
     async def check_stock(self, slug: str, required_quantity: int) -> Optional[ProductOut]:
         product = await self.repository.get_by_slug(slug)
@@ -68,6 +99,9 @@ class ProductService(BaseService[ProductRepository]):
 
         product_dict["shop_id"] = shop_id
 
+        temp = Product(**product_dict)
+        await self.validate_product_attributes(temp)
+
         product = await self.repository.create(product_dict)
         if not product:
             return None
@@ -80,8 +114,8 @@ class ProductService(BaseService[ProductRepository]):
     async def update(self, item_id: Any, data: ProductUpdate) -> Optional[ProductOut]:
         product_dict = data.model_dump(exclude_unset=True)
 
-        existing_product = await self.repository.get_by_id(item_id)
-        if not existing_product:
+        existing = await self.repository.get_by_id(item_id)
+        if not existing:
             return None
 
         if "category" in product_dict:
@@ -92,10 +126,14 @@ class ProductService(BaseService[ProductRepository]):
                     return None
                 product_dict["category"] = category
 
-        if "name" in product_dict and product_dict["name"] != existing_product.name:
+        if "name" in product_dict and product_dict["name"] != existing.name:
             base = slugify(product_dict["name"])
             suf = uuid4().hex[:8]
             product_dict["slug"] = f"{base}-{suf}"
+
+        for k, v in product_dict.items():
+            setattr(existing, k, v)
+        await self.validate_product_attributes(existing)
 
         product = await self.repository.update(item_id, product_dict)
         if not product:

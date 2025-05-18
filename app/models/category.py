@@ -36,7 +36,7 @@ class Category(Document):
     def _generate_attribute_slugs(self):
         for attr in self.attributes:
             if not getattr(attr, 'slug', None):
-                attr["slug"] = slugify(attr["name"])
+                attr.slug = slugify(attr.name)
 
     @before_event(Delete)
     async def on_delete(self):
